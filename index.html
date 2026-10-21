@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="fa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>سؤالِ مهمونی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: a dark cinema room; each story plays in a 9:16 frame and stops on its last frame to ask the viewer something. */
+:root {
+  --ink: #071a2e;        /* room */
+  --navy: #0f3a63;       /* panels, the end-card blue from the films */
+  --teal: #53a2be;       /* choice + progress */
+  --leaf: #6abd54;       /* the one call to action */
+  --cream: #f6efe2;      /* text on dark, chips */
+  --mute: #9fb4c8;       /* secondary text */
+  --line: rgba(246, 239, 226, .14);
+  --glass: rgba(7, 26, 46, .72);
+  --font: "Vazirmatn", "Tahoma", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--ink); color: var(--cream); font-family: var(--font); font-size: 16px; -webkit-tap-highlight-color: transparent; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+.app { min-height: 100%; }
+
+/* ---------- home ---------- */
+.home { max-width: 760px; margin: 0 auto; padding: 40px 16px 48px; display: grid; gap: 28px; }
+.home header { display: grid; gap: 10px; }
+.eyebrow { font-size: 13px; letter-spacing: .04em; color: var(--teal); font-weight: 700; }
+.home h1 { margin: 0; font-size: clamp(30px, 7vw, 46px); font-weight: 900; line-height: 1.25; text-wrap: balance; }
+.home p.lead { margin: 0; color: var(--mute); font-size: 16px; line-height: 1.9; max-width: 34em; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card { position: relative; display: block; padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: var(--navy); text-align: right; aspect-ratio: 9 / 16; max-width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .45); transition: transform .25s ease; }
+.card:hover { transform: translateY(-4px); }
+.card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,26,46,0) 35%, rgba(7,26,46,.92) 88%); }
+.card .meta { position: absolute; left: 0; right: 0; bottom: 0; padding: 16px; display: grid; gap: 6px; }
+.card .who { justify-self: start; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 99px; background: var(--teal); color: var(--ink); }
+.card h2 { margin: 0; font-size: clamp(18px, 4.6vw, 24px); font-weight: 900; }
+.card .tag { font-size: 13px; line-height: 1.7; color: var(--cream); opacity: .85; }
+.card .len { font-size: 12px; color: var(--mute); }
+.card .playdot { position: absolute; top: 14px; left: 14px; width: 44px; height: 44px; border-radius: 50%; background: var(--cream); display: grid; place-items: center; }
+.card .playdot::before { content: ""; border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent var(--ink); margin-left: 3px; }
+.how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.how div { border-top: 1px solid var(--line); padding-top: 10px; font-size: 13px; line-height: 1.8; color: var(--mute); }
+.how b { display: block; color: var(--cream); font-size: 14px; }
+
+/* ---------- player ---------- */
+.player { position: fixed; inset: 0; background: #000; display: grid; place-items: center; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); }
+.player .backdrop { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(40px) brightness(.35); transform: scale(1.2); }
+.frame { position: relative; height: 100%; aspect-ratio: 9 / 16; max-width: 100%; overflow: hidden; background: #000; }
+@media (min-width: 700px) { .frame { height: calc(100% - 40px); border-radius: 28px; box-shadow: 0 30px 90px rgba(0,0,0,.6); } }
+.frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.frame video.on { opacity: 1; }
+.top { position: absolute; left: 0; right: 0; top: 0; padding: 12px 12px 30px; display: grid; gap: 10px; background: linear-gradient(180deg, rgba(0,0,0,.45), transparent); z-index: 3; }
+.bars { display: flex; gap: 4px; direction: ltr; }
+.bars span { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,.3); overflow: hidden; }
+.bars i { display: block; height: 100%; width: 0; background: var(--cream); }
+.ctrl { display: flex; justify-content: space-between; align-items: center; }
+.ctrl .ttl { font-size: 13px; font-weight: 700; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+.icon { width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(0,0,0,.35); display: grid; place-items: center; font-size: 17px; line-height: 1; }
+.icons { display: flex; gap: 8px; }
+.tapzone { position: absolute; inset: 0; z-index: 2; }
+.paused { position: absolute; inset: 0; display: grid; place-items: center; z-index: 2; pointer-events: none; }
+.paused span { width: 74px; height: 74px; border-radius: 50%; background: rgba(0,0,0,.45); display: grid; place-items: center; }
+.paused span::before { content: ""; border-style: solid; border-width: 13px 0 13px 21px; border-color: transparent transparent transparent var(--cream); margin-left: 5px; }
+.toast { position: absolute; top: 92px; left: 16px; right: 16px; z-index: 4; display: flex; justify-content: center; pointer-events: none; }
+.toast span { background: var(--cream); color: var(--ink); font-weight: 700; font-size: 15px; padding: 10px 18px; border-radius: 18px 18px 18px 6px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  animation: pop 2.6s ease forwards; }
+@keyframes pop { 0% { opacity: 0; transform: translateY(-8px) scale(.96); } 10%, 82% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-6px); } }
+
+/* question sheet: rises over the frozen last frame */
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; padding: 70px 18px 26px; display: grid; gap: 14px;
+  background: linear-gradient(180deg, rgba(7,26,46,0), rgba(7,26,46,.86) 32%, rgba(7,26,46,.97)); animation: rise .45s cubic-bezier(.2,.9,.25,1.15); }
+@keyframes rise { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet .k { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 700; color: var(--teal); }
+.sheet .k em { font-style: normal; color: var(--mute); }
+.sheet h3 { margin: 0; font-size: clamp(20px, 5.4vw, 26px); font-weight: 900; line-height: 1.5; text-wrap: balance; }
+.opts { display: flex; flex-wrap: wrap; gap: 10px; }
+.opt { border: 1.5px solid var(--line); background: rgba(246,239,226,.08); border-radius: 99px; padding: 12px 20px; font-weight: 700; font-size: 16px; transition: background .2s, border-color .2s, transform .15s; }
+.opt:hover { border-color: var(--teal); background: rgba(83,162,190,.18); }
+.opt:active { transform: scale(.96); }
+.opt.main { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+.start { position: absolute; inset: 0; z-index: 6; display: grid; align-content: end; justify-items: center; gap: 18px; padding: 0 22px 64px; text-align: center;
+  background: linear-gradient(180deg, rgba(7,26,46,.1) 30%, rgba(7,26,46,.92) 78%); }
+.start .who { font-size: 12px; font-weight: 700; padding: 3px 12px; border-radius: 99px; background: var(--teal); color: var(--ink); }
+.start h2 { margin: 0; font-size: clamp(30px, 8vw, 40px); font-weight: 900; }
+.start p { margin: 0; font-size: 16px; line-height: 1.8; color: var(--cream); opacity: .9; max-width: 22em; }
+.start small { font-size: 13px; color: var(--mute); }
+.start button { border: 0; background: var(--cream); color: var(--ink); font-weight: 900; font-size: 18px; padding: 16px 30px; border-radius: 99px; box-shadow: 0 16px 40px rgba(0,0,0,.45); }
+
+/* ending built from the viewer's answers */
+.final { position: absolute; inset: 0; z-index: 7; overflow-y: auto; background: linear-gradient(180deg, rgba(7,26,46,.2) 0%, rgba(7,26,46,.9) 21%, var(--ink) 27%); animation: fade .5s ease; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.final .in { min-height: 100%; padding: 90px 20px 28px; display: grid; align-content: end; gap: 16px; }
+.final h3 { margin: 0; font-size: clamp(26px, 7vw, 34px); font-weight: 900; }
+.final p { margin: 0; line-height: 1.95; font-size: 16px; color: var(--cream); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips span { font-size: 13px; padding: 5px 12px; border-radius: 99px; background: rgba(83,162,190,.2); border: 1px solid rgba(83,162,190,.5); }
+.chips b { color: var(--teal); }
+.cta { display: grid; gap: 12px; padding: 16px; border-radius: 20px; background: var(--navy); border: 1px solid var(--line); }
+.cta .h { font-weight: 900; font-size: 17px; }
+.cta .h small { display: block; font-weight: 500; font-size: 13px; color: var(--leaf); margin-top: 2px; }
+.card2 { display: grid; gap: 10px; }
+.card2 div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 14px; border-radius: 14px; background: rgba(0,0,0,.22); }
+.card2 span { font-size: 14px; color: var(--mute); }
+.card2 b { font-size: 20px; font-weight: 900; }
+.card2 .phone { font-size: clamp(20px, 6vw, 26px); font-weight: 900; letter-spacing: .02em; white-space: nowrap; font-variant-numeric: tabular-nums; user-select: all; -webkit-user-select: all; }
+.msg { margin: 0; padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.25); font-size: 15px; line-height: 1.9; user-select: all; -webkit-user-select: all; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.go { flex: 1 1 160px; border: 0; border-radius: 99px; padding: 14px 18px; font-weight: 900; font-size: 16px; text-align: center; text-decoration: none; }
+.go.leaf { background: var(--leaf); color: #fff; }
+.go.ghost { background: transparent; color: var(--cream); border: 1.5px solid var(--line); }
+.num { font-size: 14px; color: var(--mute); }
+.num bdi { color: var(--cream); font-weight: 700; user-select: all; -webkit-user-select: all; }
+.more { display: flex; flex-wrap: wrap; gap: 10px; }
+.more button { flex: 1 1 140px; border: 1.5px solid var(--line); background: transparent; border-radius: 99px; padding: 11px 14px; font-weight: 700; font-size: 14px; }
+@media (max-width: 420px) { .how { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="app" dir="rtl">
+  <main class="home" id="home">
+    <header>
+      <div class="eyebrow">قصه‌ی تعاملی، هر کدوم حدودِ یک دقیقه</div>
+      <h1>دو قصه‌ی کوتاه، که آخرش به خودِ تو می‌رسه</h1>
+      <p class="lead">قصه رو ببین؛ وسطش یه لحظه می‌ایسته تا خودت ادامه بدی. آخرش شماره‌ی مشاوره‌ی رایگان هست.</p>
+    </header>
+    <div class="cards">
+      <button class="card" id="card-women" type="button" aria-label="پخشِ قصه‌ی سؤالِ مهمونی">
+        <img src="media/cover-w.jpg" alt="">
+        <span class="shade"></span><span class="playdot"></span>
+        <span class="meta">
+          <span class="who">زن‌دایی</span>
+          <h2>سؤالِ مهمونی</h2>
+          <span class="tag">وسطِ مهمونی همه یه سؤال ازش داشتن.</span>
+          <span class="len">۱ دقیقه</span>
+        </span>
+      </button>
+      <button class="card" id="card-men" type="button" aria-label="پخشِ قصه‌ی بوی اداره">
+        <img src="media/cover-m.jpg" alt="">
+        <span class="shade"></span><span class="playdot"></span>
+        <span class="meta">
+          <span class="who">آقا مجید</span>
+          <h2>بوی اداره</h2>
+          <span class="tag">یه بو، که کلِ اداره رو برگردوند.</span>
+          <span class="len">۳۶ ثانیه</span>
+        </span>
+      </button>
+    </div>
+    <div class="how">
+      <div><b>ببین</b>هر قسمت چند ثانیه‌ست. با لمسِ تصویر نگهش دار.</div>
+      <div><b>یه دکمه</b>وسطِ قصه، خودت ادامه‌ش بده.</div>
+      <div><b>مشاوره‌ی رایگان</b>آخرش شماره‌ی تماس هست.</div>
+    </div>
+  </main>
+
+  <section class="player" id="player" hidden>
+    <div class="backdrop" id="backdrop"></div>
+    <div class="frame" id="frame">
+      <video id="va" playsinline preload="auto"></video>
+      <video id="vb" playsinline preload="auto"></video>
+      <div class="tapzone" id="tap"></div>
+      <div class="paused" id="paused" hidden><span></span></div>
+      <div class="top">
+        <div class="bars" id="bars"></div>
+        <div class="ctrl">
+          <span class="ttl" id="ttl"></span>
+          <span class="icons">
+            <button class="icon" id="mute" type="button" aria-label="قطع و وصلِ صدا">🔊</button>
+            <button class="icon" id="close" type="button" aria-label="بستن">✕</button>
+          </span>
+        </div>
+      </div>
+      <div class="toast" id="toast"></div>
+      <div class="sheet" id="sheet" hidden></div>
+      <div class="start" id="start" hidden><span class="who" id="sWho"></span><h2 id="sTitle"></h2><p id="sTag"></p><button type="button" id="startBtn">▶ شروعِ قصه</button><small id="sLen"></small></div>
+      <div class="final" id="final" hidden></div>
+    </div>
+  </section>
+</div>
+
+<script>
+// Phone number (WhatsApp, international format without +, e.g. "989121234567").
+// Empty = viewers copy the message and send it to whoever shared the link.
+// Name and phone shown at the end of both stories, e.g. phone "09121234567".
+const CONTACT = { name: "", phone: "" };
+// Each team member can send a personal link: …/?name=…&tel=09…  (the link's values win over CONTACT)
+try {
+  const q = new URLSearchParams(location.search);
+  if (q.get("name")) CONTACT.name = q.get("name").slice(0, 40);
+  if (q.get("tel")) CONTACT.phone = q.get("tel").replace(/[^\d۰-۹]/g, "").replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).slice(0, 13);
+} catch (e) {}
+
+// Set by build.py for the one-story links ("women" / "men"); null = both stories with a home screen.
+const ONLY = "women";
+
+const STORIES = {
+  women: {
+    title: "سؤالِ مهمونی", cover: "media/cover-w.jpg", other: "men", otherName: "بوی اداره",
+    who: "زن‌دایی", tag: "وسطِ مهمونی همه یه سؤال ازش داشتن. قصه رو ببین؛ وسطش یه لحظه منتظرت می‌مونه.", len: "۱ دقیقه",
+    // one file, played straight through; it waits once at `pause` (the niece's message)
+    src: "women", pause: 13.45,
+    ask: { k: "یه پیام از خواهرزاده", q: "«یه چیزی برات فرستادم… فقط ببین.»", opts: [ { t: "▶ ببین چی فرستاده", main: true } ] },
+    final(a) {
+      const skin = a.skin;
+      const line = {
+        "خشک": "پوستت خشکه، درست مثلِ زن‌دایی. یه روتینِ ساده‌ی آبرسان می‌تونه فرقش رو نشون بده.",
+        "چرب": "پوستِ چرب روتینِ خودش رو می‌خواد: سبک، تمیزکننده و بدونِ سنگینی.",
+        "مختلط": "پوستِ مختلط یعنی هر ناحیه یه نیاز. یه مشاوره‌ی کوتاه ترکیبِ درستش رو پیدا می‌کنه.",
+        "نمی‌دونم": "اشکالی نداره! اولین سؤالِ مشاوره همینه: نوعِ پوستت رو با هم پیدا می‌کنید."
+      }[skin] || "یه روتینِ ساده، مخصوصِ خودت. از یه مشاوره‌ی کوتاه شروع می‌شه.";
+      return {
+        head: "حالا… نوبتِ توئه.", line,
+        chips: skin ? [["پوستِ تو", skin]] : [],
+        msg: "سلام! قصه‌ی «سؤالِ مهمونی» رو دیدم. منم می‌خوام بدونم کدومش به من می‌خوره." + (skin && skin !== "نمی‌دونم" ? " پوستم " + skin + "ه." : "")
+      };
+    }
+  },
+  men: {
+    title: "بوی اداره", cover: "media/cover-m.jpg", other: "women", otherName: "سؤالِ مهمونی",
+    who: "آقا مجید", tag: "یه بو، که کلِ اداره رو برگردوند. قصه رو ببین؛ وسطش یه لحظه منتظرت می‌مونه.", len: "۳۶ ثانیه",
+    // waits once when the coworker asks where it came from
+    src: "men", pause: 21.22,
+    ask: { k: "همکارش هم می‌خواد", q: "«از کجا گرفتی؟ منم می‌خوام!»", opts: [ { t: "▶ ببین از کجا", main: true } ] },
+    final(a) {
+      const line = {
+        "رایحه": "تو دنبالِ یه رایحه‌ی ماندگاری؛ همونی که آقا مجید رو توی راهرو معروف کرد.",
+        "لبخند": "نفسِ تازه و لبخندِ مطمئن، از همون دهانشویه‌ی گیاهیِ صبح شروع می‌شه.",
+        "هر دو": "هر دو! یه روتینِ دودقیقه‌ایِ صبح، کلِ روز رو عوض می‌کنه."
+      }[a.want] || "یه روتینِ دودقیقه‌ایِ صبح، کلِ روز رو عوض می‌کنه.";
+      const wantName = { "رایحه": "رایحه‌ی ماندگار", "لبخند": "لبخند و نفسِ تازه", "هر دو": "هر دو" }[a.want];
+      const chips = [];
+      if (a.routine) chips.push(["روتینِ الانت", a.routine]);
+      if (wantName) chips.push(["دنبالِ", wantName]);
+      return {
+        head: "حالا… نوبتِ توئه، رفیق.", line, chips,
+        msg: "سلام! قصه‌ی «بوی اداره» رو دیدم. منم می‌خوام بدونم کدومش به من می‌خوره." + (a.want === "هر دو" ? " هر دوش رو می‌خوام." : wantName ? " بیشتر دنبالِ " + wantName + "م." : "")
+      };
+    }
+  }
+};
+
+const $ = (id) => document.getElementById(id);
+const va = $("va"), vb = $("vb");
+// A single <video> per story: pausing and resuming the same element keeps voice, music and effects unbroken.
+let story = null, key = null, answers = {}, muted = false, raf = 0, waited = false, done = false;
+const cur = va;
+vb.remove();
+
+function openStory(k, autoplay) {
+  key = k; story = STORIES[k]; answers = {}; waited = false; done = false;
+  $("home").hidden = true; $("player").hidden = false;
+  $("final").hidden = true; $("sheet").hidden = true; $("paused").hidden = true; $("toast").innerHTML = "";
+  $("ttl").textContent = story.title;
+  $("sWho").textContent = story.who; $("sTitle").textContent = story.title; $("sTag").textContent = story.tag; $("sLen").textContent = story.len;
+  $("backdrop").style.backgroundImage = "url(" + story.cover + ")";
+  $("bars").innerHTML = "<span><i></i></span><span><i></i></span>";
+  cur.classList.add("on");
+  cur.src = "media/" + story.src + ".mp4"; cur.poster = story.cover; cur.muted = muted; cur.load();
+  if (!ONLY) try { history.replaceState(null, "", "#" + k); } catch (e) {}
+  if (autoplay) play(); else $("start").hidden = false;
+  cancelAnimationFrame(raf); tick();
+}
+
+function play() {
+  $("start").hidden = true;
+  cur.muted = muted;
+  const p = cur.play();
+  if (p && p.catch) p.catch(() => { $("start").hidden = false; });
+}
+
+function tick() {
+  if (story) {
+    const t = cur.currentTime, d = cur.duration || 0, P = story.pause;
+    const spans = $("bars").children;
+    spans[0].firstChild.style.width = (Math.min(1, t / P) * 100).toFixed(2) + "%";
+    spans[1].firstChild.style.width = (d > P ? Math.max(0, (t - P) / (d - P)) * 100 : 0).toFixed(2) + "%";
+    // stop on the cliffhanger frame (checked every animation frame, so it lands within a frame or two)
+    if (!waited && !cur.paused && t >= P - 0.04) { waited = true; cur.pause(); showAsk(story.ask); }
+    if (cur.ended && !done) finish();
+  }
+  raf = requestAnimationFrame(tick);
+}
+
+function finish() { if (!story || done) return; done = true; showFinal(); }
+cur.addEventListener("ended", finish);
+// a background tab can throttle animation frames; timeupdate still catches the pause point
+cur.addEventListener("timeupdate", () => { if (story && !waited && cur.currentTime >= story.pause - 0.04) { waited = true; cur.pause(); showAsk(story.ask); } });
+
+function showAsk(ask) {
+  const s = $("sheet");
+  s.innerHTML = '<div class="k"></div><h3></h3><div class="opts"></div>';
+  s.querySelector(".k").innerHTML = "<span></span><em></em>";
+  s.querySelector(".k span").textContent = ask.k;
+  s.querySelector(".k em").textContent = "نیمه‌ی قصه";
+  s.querySelector("h3").textContent = ask.q;
+  const box = s.querySelector(".opts");
+  ask.opts.forEach((o) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt" + (o.main ? " main" : ""); b.textContent = o.t;
+    b.addEventListener("click", () => { $("sheet").hidden = true; play(); });
+    box.appendChild(b);
+  });
+  s.hidden = false;
+  const first = box.querySelector("button"); if (first) first.focus({ preventScroll: true });
+}
+
+function showFinal() {
+  const r = story.final(answers);
+  const f = $("final");
+  const digits = CONTACT.phone.replace(/\D/g, "");
+  const shown = digits.length === 11 ? digits.slice(0, 4) + " " + digits.slice(4, 7) + " " + digits.slice(7) : digits;
+  f.innerHTML =
+    '<div class="in">' +
+      '<h3></h3><p class="line"></p>' +
+      '<div class="cta">' +
+        '<div class="h" style="text-align:center">مشاوره‌ی رایگان<small>بدونِ اجبار به خرید</small></div>' +
+        '<div class="card2">' +
+          '<div><span>اسم</span><b id="cname"></b></div>' +
+          '<div><span>شماره</span><bdi class="phone" dir="ltr" id="phone"></bdi></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="more"><button type="button" id="again">دوباره ببین</button><button type="button" id="toOther"></button><button type="button" id="toHome">همه‌ی قصه‌ها</button></div>' +
+    '</div>';
+  f.querySelector("h3").textContent = r.head;
+  f.querySelector(".line").textContent = r.line;
+  $("phone").textContent = digits ? fa(shown) : "—";
+  $("cname").textContent = CONTACT.name || "—";
+  $("again").addEventListener("click", () => openStory(key, true));
+  $("toOther").textContent = "قصه‌ی «" + story.otherName + "»";
+  $("toOther").addEventListener("click", () => openStory(story.other, true));
+  $("toHome").addEventListener("click", home);
+  if (ONLY) { $("toOther").hidden = true; $("toHome").hidden = true; }
+  f.hidden = false;
+}
+
+function copy(text, btn) {
+  const label = btn.textContent;
+  const done = () => { btn.textContent = "کپی شد ✓"; setTimeout(() => (btn.textContent = label), 1800); };
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents($("phone")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "شماره انتخاب شد"; };
+  try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+}
+
+function home() {
+  if (ONLY) { openStory(ONLY, false); return; }
+  va.pause(); cancelAnimationFrame(raf); story = null;
+  $("player").hidden = true; $("home").hidden = false;
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+}
+
+function fa(n) { return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]); }
+
+$("tap").addEventListener("click", () => {
+  if (!story || !$("sheet").hidden || !$("final").hidden || !$("start").hidden) return;
+  if (cur.paused) { cur.play(); $("paused").hidden = true; } else { cur.pause(); $("paused").hidden = false; }
+});
+$("mute").addEventListener("click", () => { muted = !muted; va.muted = muted; $("mute").textContent = muted ? "🔇" : "🔊"; });
+$("close").addEventListener("click", home);
+$("startBtn").addEventListener("click", play);
+$("card-women").addEventListener("click", () => openStory("women", true));
+$("card-men").addEventListener("click", () => openStory("men", true));
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && story) home(); });
+
+const h = location.hash.replace("#", "");
+if (ONLY) { $("close").hidden = true; openStory(ONLY, false); }
+else if (STORIES[h]) openStory(h, false);
+</script>
+
+</body>
+</html>
